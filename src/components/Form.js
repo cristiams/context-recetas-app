@@ -1,13 +1,20 @@
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react';
+import Error from './Error';
+
+import {RecetasContext} from "../context/RecetasContext";
 
 const Form = () => {
+
+  const [error, setError] = useState(false);
 
   const [ search, setSearch ] = useState({
     food: '',
     mealType: []
   });
 
-  const {mealType} = search;
+  const {food,mealType} = search;
+
+  const {setRecipe, setRequest} = useContext(RecetasContext);
 
   // función para leer los contenidos
   const getDataForm = e => {
@@ -18,9 +25,7 @@ const Form = () => {
 
       if(e.target.checked) {
 
-        console.log(e.target.name,e.target.value,e.target.checked);
-
-        // let mealsPrevious = mealType;
+        // console.log(e.target.name,e.target.value,e.target.checked);
 
         mealsPrevious.push(e.target.value);
 
@@ -29,24 +34,22 @@ const Form = () => {
           mealType : mealsPrevious
         })
 
-        console.log(search);
+        // console.log(search);
       }
       else {
 
-        console.log(e.target.name,e.target.value,e.target.checked);
-
-        // let mealsPrevious = mealType;
+        // console.log(e.target.name,e.target.value,e.target.checked);
 
         let index = mealsPrevious.findIndex(el => el === e.target.value)
 
-        mealsPrevious.splice(index, 1)
+        mealsPrevious.splice(index,1)
 
         setSearch({
           ...search,
           mealType : mealsPrevious
         })
 
-        console.log(search);
+        // console.log(search);
       }
     }
     else {
@@ -58,8 +61,24 @@ const Form = () => {
     }
   }
 
+  const submitSearch = e => {
+
+    e.preventDefault();
+
+    if(food.trim() === '') {
+
+      setError(true);
+      return;
+    }
+    setError(false);
+    setRecipe(search);
+    setRequest(true);
+  }
+
   return (
-    <form className="col-12">
+    <form className="col-12"
+      onSubmit={submitSearch}
+    >
       <div className="row">
         <div className="col-md-4 form-group">
           <input type="text" name="food" className="form-control" placeholder="Escribe tu ingrediente" 
@@ -99,6 +118,7 @@ const Form = () => {
           <input type="submit" className="btn btn-block btn-primary" value="Buscar Recetas" />
       </div>
       </div>
+      { error ? <Error message="Agrega un término de búsqueda" /> : null }
     </form>
   )
 }
