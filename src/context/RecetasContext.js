@@ -21,10 +21,20 @@ const RecetasProvider = (props) => {
   useEffect(() => {
 
     if(request) {
-      
+      console.log(recipe);
+      let mealTypes = '';
+      if (recipe.mealType.length) {
+        recipe.mealType.forEach(element => {
+          mealTypes += `&mealType=${element}`;
+        });
+        
+      }
       const getRecipe = async () => {
-        const url = `${API_URL}?app_id=${API_ID}&app_key=${API_KEY}&q=${recipe.food}`;
+        let url = `${API_URL}?type=public&app_id=${API_ID}&app_key=${API_KEY}&q=${recipe.food}`;
         // console.log(url);
+        if (mealTypes) {
+          url += mealTypes;
+        }
         const result = await axios.get(url);
         // console.log(result);
         // console.log(result.data.hits);
